@@ -89,9 +89,9 @@ int main() {
     uint indices[9] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
     uint values[9]  { 1, 0, 1, 1, 1, 1, 0, 1, 0 };
     #if LINK_SPV
-      load_shader(vs, "link.spv", "_Z9frag_mainv", 6, indices, values);
+      load_shader(vs, "link.spv", "_Z9frag_mainv", 9, indices, values);
     #else
-      load_shader(vs, "frag.spv", "_Z9frag_mainv", 6, indices, values);
+      load_shader(vs, "frag.spv", "_Z9frag_mainv", 9, indices, values);
     #endif
   }
 
