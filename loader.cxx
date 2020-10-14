@@ -1,5 +1,7 @@
-#include "app.hxx"
 #include <vector>
+#include <cstdio>
+#include <gl3w/GL/gl3w.h>
+#include <GLFW/glfw3.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Host code.
@@ -33,14 +35,6 @@ struct frag_features_t {
 };
 
 
-struct myapp_t : app_t {
-  myapp_t();
-  void display() override;
-
-  GLuint program;
-  GLuint vao;
-};
-
 void load_shader(GLuint shader, const char* module, const char* entry_point, 
   int num_spec, const uint* spec_indices, const uint* spec_values) {
   FILE* f = fopen(module, "r");
@@ -57,10 +51,23 @@ void load_shader(GLuint shader, const char* module, const char* entry_point,
     vec.data(), len);
   glSpecializeShader(shader, entry_point, num_spec, spec_indices, spec_values);
 }
+ 
+int main() {
+  glfwInit();
+  gl3wInit();
+  
+  glfwWindowHint(GLFW_DOUBLEBUFFER, 1);
+  glfwWindowHint(GLFW_DEPTH_BITS, 24);
+  glfwWindowHint(GLFW_STENCIL_BITS, 8);
+  glfwWindowHint(GLFW_SAMPLES, 4); // HQ 4x multisample.
+  glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
-myapp_t::myapp_t() : app_t("Crash demo") {
-  // Create a VAO.
-  glCreateVertexArrays(1, &vao);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+
+  GLFWwindow* window = glfwCreateWindow(640, 480, "bug", nullptr, nullptr);
+  glfwMakeContextCurrent(window);
+  glfwSwapInterval(1);
 
   // Load and compile the shaders.
   GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -85,16 +92,8 @@ myapp_t::myapp_t() : app_t("Crash demo") {
       load_shader(vs, "frag.spv", "_Z9frag_mainv", 6, indices, values);
     #endif
   }
-}
 
-void myapp_t::display() { }
-
-int main() {
-  glfwInit();
-  gl3wInit();
-  
-  myapp_t myapp;
-  myapp.loop();
+  printf("glSpecialized worked!\n");
 
   return 0;
 }
